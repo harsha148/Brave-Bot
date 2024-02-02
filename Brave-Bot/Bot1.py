@@ -34,8 +34,9 @@ class Bot1(object):
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
                 if 0 <= nx < len(self.ship_layout) and 0 <= ny < len(self.ship_layout[0]):
-                    if (self.ship_layout[nx][ny] == 'O' or self.ship_layout[nx][ny] == 'CP') and self.ship_layout[nx][ny] != 'A' and (
-                    nx, ny) not in visited_open_squares:
+                    if (self.ship_layout[nx][ny] == 'O' or self.ship_layout[nx][ny] == 'CP') and self.ship_layout[nx][
+                        ny] != 'A' and (
+                            nx, ny) not in visited_open_squares:
                         fringe.append((nx, ny))
                         prev[(nx, ny)] = current_node
         if final_node == (-1, -1):
@@ -47,14 +48,17 @@ class Bot1(object):
             current_node = prev[current_node]
         return deque(reversed(shortest_path_to_goal))
 
-    def step(self,current_ship_layout: list[list[str]],current_bot_square:tuple[int,int]) -> tuple[Status, list[list[str]]]:
+    def step(self, current_ship_layout: list[list[str]], current_bot_square: tuple[int, int]) -> tuple[
+        Status, list[list[str]],tuple[int,int]]:
+        if not self.shortest_path_to_goal:
+            return Status.FAILURE, current_ship_layout, current_bot_square
         next_bot_square = self.shortest_path_to_goal.popleft()
         x, y = next_bot_square
         if current_ship_layout[x][y] == 'A':
-            return Status.FAILURE, current_ship_layout
+            return Status.FAILURE, current_ship_layout, next_bot_square
         if current_ship_layout[x][y] == 'CP':
-            return Status.SUCCESS, current_ship_layout
+            return Status.SUCCESS, current_ship_layout, next_bot_square
         prev_bot_x, prev_bot_y = current_bot_square
         current_ship_layout[x][y] = 'B'
         current_ship_layout[prev_bot_x][prev_bot_y] = 'O'
-        return Status.INPROCESS, current_ship_layout
+        return Status.INPROCESS, current_ship_layout, next_bot_square
