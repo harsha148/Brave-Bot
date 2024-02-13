@@ -8,8 +8,8 @@ class Bot1(object):
         self.ship_layout = ship_layout
         self.bot_initial_coordinates = bot_initial_coordinates
         self.shortest_path_to_goal = self.get_shortest_path_to_goal()
-        print('Shortest Path for Bot1')
-        print(self.shortest_path_to_goal)
+        # print('Shortest Path for Bot1')
+        # print(self.shortest_path_to_goal)
 
     def get_shortest_path_to_goal(self) -> deque[tuple[int, int]]:
         # performing BFS with self.bot_coordinates as root to fetch the shortest path
