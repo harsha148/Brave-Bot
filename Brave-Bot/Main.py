@@ -1,23 +1,16 @@
 import sys
-import Ship
-import Spawner
+from Ship import Ship
+from Spawner import Spawner
 from Alien import alien_step
-from Bot1 import Bot1
+from Bot2 import Bot2
 from Status import Status
 from tkinter import *
 from tkinter import ttk
 
-
-def run_simulation(ship_layout: list[list[int]], bot, current_bot_square: tuple[int, int],
-                   alien_positions: list[tuple[int, int]]):
+def run_simulation(ship_layout, bot, alien_positions):
     status = Status.INPROCESS
     number_of_steps = 0
-    D = len(ship_layout)
-    for i in range(D):
-        for j in range(D):
-            if ship_layout[i][j] == 'CP' or ship_layout[i][j] == 'CP&A':
-                print(f'The position of captain {i},{j}')
-                break
+
     while status == Status.INPROCESS:
         root = Tk()
         table = ttk.Frame(root)
@@ -29,14 +22,16 @@ def run_simulation(ship_layout: list[list[int]], bot, current_bot_square: tuple[
                 label = ttk.Label(table, text=ship_layout[row][col], borderwidth=1, relief="solid")
                 label.grid(row=row, column=col, sticky="nsew", padx=1, pady=1)
         root.mainloop()
-        status, ship_layout, current_bot_square = bot.step(ship_layout, current_bot_square)
-        print(f'The current position of the bot is {current_bot_square}')
+        print(f"\nSimulation step {number_of_steps}")
+        status, new_bot_position = bot.step()
+        print(f'The current position of the bot is {new_bot_position}')
         if status != Status.INPROCESS:
             break
         status, ship_layout, alien_positions = alien_step(ship_layout, alien_positions)
-        print('Alien positions')
-        print(aliens)
+        print(f"Updated alien positions: {alien_positions}")
+
         number_of_steps += 1
+
     if status == Status.SUCCESS:
         print(f'Bot succeeded after {number_of_steps} steps')
     elif status == Status.FAILURE:
@@ -46,7 +41,7 @@ def run_simulation(ship_layout: list[list[int]], bot, current_bot_square: tuple[
 
 if __name__ == '__main__':
     # Prompt the user to provide the ship size
-    ship_size_input = 10#input("Please enter the ship size: ")
+    ship_size_input = input("Please enter the ship size: ")
 
     try:
         ship_size = int(ship_size_input)
@@ -54,29 +49,29 @@ if __name__ == '__main__':
         print("Invalid input :(, please provide an integer for the ship size!")
         sys.exit(1)
 
-    ship = Ship.Ship(ship_size)
+    ship = Ship(ship_size)
     ship_layout, root_open_square = ship.generate_ship_layout()
     print(ship_layout)
-    spawner = Spawner.Spawner(ship_layout, root_open_square)
+    spawner = Spawner(ship_layout, root_open_square)
+
+    # Spawn the bot, aliens, and captain, initializing their positions on the ship layout
     ship_layout, bot_initial_coordinates = spawner.spawn_bot()
-    print('Bot Spawned')
-    print('ship layout')
-    print(ship_layout)
-    number_of_aliens = 5#input("Please enter the number of aliens: ")
+    print('Bot Spawned at:', bot_initial_coordinates)
+    print(f'Ship_layout {ship_layout}')
+
+    number_of_aliens = input("Please enter the number of aliens: ")
     try:
         number_of_aliens = int(number_of_aliens)
     except ValueError:
-        print("Invalid input :(, please provide an integer for the ship size!")
+        print("Invalid input :(, please provide an integer for the number of aliens")
         sys.exit(1)
-    ship_layout, aliens = spawner.spawn_aliens(number_of_aliens)
-    print('aliens spawned')
-    print(ship_layout)
-    print(aliens)
+    ship_layout, aliens_positions = spawner.spawn_aliens(number_of_aliens)
+    print(f'{number_of_aliens} Aliens spawned at positions: {aliens_positions}')
+    print(f'Ship_layout {ship_layout}')
 
-    ship_layout, captain = spawner.spawn_captain()
-    print('Captain Spawned')
-    print(ship_layout)
-    print(captain)
+    ship_layout, captain_position = spawner.spawn_captain()
+    print('Captain Spawned at:', captain_position)
+    print(f'Ship_layout {ship_layout}')
 
-    bot1 = Bot1(ship_layout, bot_initial_coordinates)
-    run_simulation(ship_layout, bot1, bot_initial_coordinates, aliens)
+    bot2 = Bot2(ship_layout, bot_initial_coordinates, captain_position)
+    run_simulation(ship_layout, bot2, aliens_positions)
