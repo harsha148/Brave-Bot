@@ -7,8 +7,8 @@ class Spawner(object):
         self.ship_layout = ship_layout
         self.root_open_square = root_open_square
         self.open_squares = self.get_open_squares()
-        print('Calculated open squares')
-        print(self.open_squares)
+        # print('Calculated open squares')
+        # print(self.open_squares)
 
     ''' method get_open_squares is used to fetch the list of open squares,
      which can be later used to spawn different items/characters '''
