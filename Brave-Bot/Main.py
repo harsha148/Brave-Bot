@@ -1,12 +1,4 @@
-import sys
-import Ship
-import Spawner
-from Alien import alien_step
-from Bot1 import Bot1
 from Simulations import *
-from Status import Status
-from tkinter import *
-from tkinter import ttk
 
 if __name__ == '__main__':
     # Prompt the user to provide the ship size

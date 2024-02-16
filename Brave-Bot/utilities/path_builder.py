@@ -45,7 +45,7 @@ def get_dynamic_path(ship_layout, start, goal):
         return [start]
 
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # Directions: Up, Down, Left, Right
-    visited = set([start])  # Keep track of visited positions to avoid loops
+    visited = {start}  # Keep track of visited positions to avoid loops
     queue = deque([(start, [])])  # Queue for BFS: (current_position, path to this position)
 
     while queue:
