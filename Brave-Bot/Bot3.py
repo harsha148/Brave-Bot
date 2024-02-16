@@ -1,8 +1,7 @@
 from Status import Status
-from utilities.path_builder import get_dynamic_path
+from utilities.path_builder import get_safe_path
 
-
-class Bot2:
+class Bot3:
     def __init__(self, ship_layout, start_position, goal_position):
         self.ship_layout = ship_layout
         self.position = start_position
@@ -10,7 +9,7 @@ class Bot2:
         self.path = self.calculate_path()
 
     def calculate_path(self):
-        return get_dynamic_path(self.ship_layout, self.position, self.goal)
+        return get_safe_path(self.ship_layout, self.position, self.goal)
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
         if not self.path or self.position == self.goal:
