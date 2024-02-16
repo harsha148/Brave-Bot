@@ -9,7 +9,6 @@ class Ship(object):
         self.ship_size = ship_size
 
     def generate_ship_layout(self) -> tuple[list[list[str]], tuple[int, int]]:
-        random.seed(40)
         starttime = time.time()
         # ship is a 2D array which holds information about each square
         # 'C' indicates the square is closed and 'O' indicates it is open

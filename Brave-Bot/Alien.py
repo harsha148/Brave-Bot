@@ -1,10 +1,8 @@
 import random
-
 from Status import Status
 
 
-def alien_step(ship_layout: list[list[str]], aliens: list[tuple[int, int]]) -> tuple[
-    Status, list[list[str]], list[tuple[int, int]]]:
+def alien_step(ship_layout: list[list[str]], aliens: list[tuple[int, int]]) -> tuple[Status, list[list[str]], list[tuple[int, int]]]:
     directions = [(-1, 0), (1, 0), (0, 1), (0, -1)]  # left, right, up, down
     random.shuffle(aliens)  # randomizing the order in which the aliens move
     rules_for_updating_new_alien_square = {'CP': 'CP&A', 'O': 'A'}
@@ -13,7 +11,7 @@ def alien_step(ship_layout: list[list[str]], aliens: list[tuple[int, int]]) -> t
         possible_steps = []
         for dx, dy in directions:
             nx, ny = alien_x + dx, alien_y + dy
-            if 0<=nx<len(ship_layout) and 0<=ny<len(ship_layout[0]):
+            if 0 <= nx < len(ship_layout) and 0 <= ny < len(ship_layout[0]):
                 if ship_layout[nx][ny] != 'C' and ship_layout[nx][ny] != 'A' and ship_layout[nx][ny] != 'CP&A':
                     possible_steps.append((nx, ny))
         if not possible_steps:

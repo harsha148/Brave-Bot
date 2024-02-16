@@ -3,6 +3,7 @@ from tkinter import Tk, ttk
 
 from Alien import alien_step
 from Bot1 import Bot1
+from Bot2 import Bot2
 from Ship import Ship
 from Spawner import Spawner
 from Status import Status
@@ -21,15 +22,15 @@ def show_tkinter(ship_layout: list[list[int]]):
     root.mainloop()
 
 
-def run_simulation(ship_layout: list[list[int]], bot, current_bot_square: tuple[int, int],
-                   alien_positions: list[tuple[int, int]], is_show_tkinter: bool) -> tuple[int, Status]:
+def run_simulation(ship_layout: list[list[int]], bot,
+                   alien_positions: list[tuple[int, int]], is_show_tkinter: bool = False) -> tuple[int, Status]:
     status = Status.INPROCESS
     number_of_steps = 0
     D = len(ship_layout)
     while status == Status.INPROCESS and number_of_steps < 1000:
         if is_show_tkinter:
             show_tkinter(ship_layout)
-        status, ship_layout, current_bot_square = bot.step(ship_layout, current_bot_square)
+        status, ship_layout, current_bot_square = bot.step()
         if status != Status.INPROCESS:
             break
         status, ship_layout, alien_positions = alien_step(ship_layout, alien_positions)
@@ -59,8 +60,8 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
             print(f'Running the simulation with K={krange[i]} for the {j + 1}th time')
             ship_layout, aliens = spawner.spawn_aliens(krange[i])
             ship_layout, captain = spawner.spawn_captain()
-            bot1 = Bot1(ship_layout, bot_initial_coordinates)
-            number_of_steps, status = run_simulation(ship_layout, bot1, bot_initial_coordinates, aliens,is_show_tkinter)
+            bot = Bot2(ship_layout, bot_initial_coordinates, captain)
+            number_of_steps, status = run_simulation(ship_layout, bot, aliens, is_show_tkinter)
             if status == Status.SUCCESS:
                 success_metrics[i] += 1
             if status == Status.INPROCESS:
