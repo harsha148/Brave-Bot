@@ -17,7 +17,7 @@ class Bot3:
             if not self.path:
                 return Status.FAILURE, self.ship_layout, self.position
 
-        next_position = self.path.pop(0)
+        next_position = self.path.popleft()
         if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
             self.position = next_position
             return Status.SUCCESS, self.ship_layout, self.position
