@@ -23,7 +23,8 @@ def show_tkinter(ship_layout: list[list[int]]):
 
 
 def run_simulation(ship_layout: list[list[int]], bot,
-                   alien_positions: list[tuple[int, int]], is_show_tkinter: bool = False) -> tuple[int, Status]:
+                   alien_positions: list[tuple[int, int]], time_constraint: int, is_show_tkinter: bool = False) -> \
+tuple[int, Status]:
     status = Status.INPROCESS
     number_of_steps = 0
     D = len(ship_layout)
@@ -44,7 +45,8 @@ def run_simulation(ship_layout: list[list[int]], bot,
 
 # method for running the ship simulation over a range of number of aliens
 # In this method K represents the number of aliens
-def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index: int, is_show_tkinter: bool):
+def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index: int, time_constraint: int,
+                                is_show_tkinter: bool):
     # sampling_index determines the number of times we will run the simulation for a single value of k
     # metric that stores the number of times a bot succeeds for a particular value of k
     success_metrics = [0] * len(krange)
@@ -60,7 +62,7 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
             print(f'Running the simulation with K={krange[i]} for the {j + 1}th time')
             ship_layout, aliens = spawner.spawn_aliens(krange[i])
             ship_layout, captain = spawner.spawn_captain()
-            bot = Bot2(ship_layout, bot_initial_coordinates, captain)
+            bot = Bot2(ship_layout, bot_initial_coordinates, captain,time_constraint)
             number_of_steps, status = run_simulation(ship_layout, bot, aliens, is_show_tkinter)
             if status == Status.SUCCESS:
                 success_metrics[i] += 1
