@@ -1,0 +1,16 @@
+import random
+
+
+def random_next_step(position, ship_layout):
+    possible_next_steps = []
+    directions = [(-1, 0), (1, 0), (0, 1), (0, -1)]
+    restricted_cells = {'C', 'A', 'CP&A'}
+    x, y = position[0], position[1]
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if (0 <= nx < len(ship_layout) and 0 <= ny < len(ship_layout[0]) and ship_layout[nx][ny]
+                not in restricted_cells):
+            possible_next_steps.append((nx, ny))
+    if possible_next_steps:
+        return random.choice(possible_next_steps)
+    return ()

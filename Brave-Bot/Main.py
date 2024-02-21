@@ -1,7 +1,11 @@
+import logging
+
 from Simulations import *
 
 if __name__ == '__main__':
     # Prompt the user to provide the ship size
+    logger = logging.getLogger('log')
+    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     ship_size_input = input("Please enter the ship size: ")
 
     try:
@@ -21,9 +25,13 @@ if __name__ == '__main__':
         k_step = int(input('Please enter the step value for generating the range of values for k'))
     except ValueError:
         print('Invalid input :(, please provide an integer!')
+    try:
+        time_constraint = float(input('Please enter the time constraint for each computation step'))
+    except ValueError:
+        print('Invalid input :(, please provide an decimal value!')
     krange = []
     k = int(k_min)
     while k <= int(k_max):
         krange.append(k)
         k += int(k_step)
-    run_simulations_over_krange(ship_size, krange, 10, True)
+    run_simulations_over_krange(ship_size, krange, 10, time_constraint,False)

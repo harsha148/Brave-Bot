@@ -3,10 +3,12 @@ from collections import deque
 from utilities.constants import restricted_cells
 
 
-def get_dynamic_path(ship_layout, start, goal, avoid_cells=None):
+def get_dynamic_path(ship_layout, start, goal, result, avoid_cells=None):
+    result['path'] = None
     if start == goal:
+        result['path'] = [start]
         # If the bot is already at the goal, no movement is needed.
-        return [start]
+        return result
 
     if avoid_cells is None:
         avoid_cells = set()
@@ -29,24 +31,25 @@ def get_dynamic_path(ship_layout, start, goal, avoid_cells=None):
 
                 # Check if the next position is the goal
                 if next_position == goal:
-                    return new_path  # Goal reached, return the path
+                    result['path'] = new_path
+                    return result  # Goal reached, return the path
 
                 queue.append((next_position, new_path))
 
     return None  # No path found if the goal is unreachable
 
 
-def get_safe_path(ship_layout, start, goal):
+def get_safe_path(ship_layout, start, goal, result):
     # Get the positions of aliens and their adjacent cells
     aliens_and_adjacent = get_aliens_and_adjacent_positions(ship_layout)
 
     # Attempt to find a path avoiding aliens and their adjacent cells
-    safe_path = get_dynamic_path(ship_layout, start, goal, avoid_cells=aliens_and_adjacent)
+    safe_path = get_dynamic_path(ship_layout, start, goal, result, avoid_cells=aliens_and_adjacent)
     if safe_path:
         return safe_path
 
     # If no safe path is found, fall back to Bot 2 behavior (avoid only aliens)
-    return get_dynamic_path(ship_layout, start, goal, avoid_cells=get_aliens_positions(ship_layout))
+    return get_dynamic_path(ship_layout, start, goal, result, avoid_cells=get_aliens_positions(ship_layout))
 
 
 def get_aliens_and_adjacent_positions(ship_layout):
