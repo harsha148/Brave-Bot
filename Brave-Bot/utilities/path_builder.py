@@ -39,7 +39,7 @@ def get_dynamic_path(ship_layout, start, goal, result, avoid_cells=None):
     return None  # No path found if the goal is unreachable
 
 
-def get_safe_path(ship_layout, start, goal,result):
+def get_safe_path(ship_layout, start, goal, result):
     # Get the positions of aliens and their adjacent cells
     aliens_and_adjacent = get_aliens_and_adjacent_positions(ship_layout)
 

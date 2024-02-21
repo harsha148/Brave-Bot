@@ -1,7 +1,11 @@
+import logging
+
 from Simulations import *
 
 if __name__ == '__main__':
     # Prompt the user to provide the ship size
+    logger = logging.getLogger('log')
+    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
     ship_size_input = input("Please enter the ship size: ")
 
     try:
