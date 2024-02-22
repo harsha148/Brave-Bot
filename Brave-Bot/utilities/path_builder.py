@@ -68,5 +68,5 @@ def get_aliens_and_adjacent_positions(ship_layout):
 
 def get_aliens_positions(ship_layout):
     aliens_positions = [(x, y) for x, row in enumerate(ship_layout)
-                        for y, cell in enumerate(row) if cell in restricted_cells]
+                        for y, cell in enumerate(row) if cell == 'A']
     return set(aliens_positions)

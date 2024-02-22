@@ -28,7 +28,7 @@ class Bot2:
         start_time = time.time()
         p.start()
         p.join(self.step_time_constraint)
-        next_position = None
+        None
         if p.is_alive():
             p.terminate()
             p.kill()
@@ -45,7 +45,8 @@ class Bot2:
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
                 self.position = next_position
                 return Status.SUCCESS, self.ship_layout, self.position
-
+            elif self.ship_layout[next_position[0]][next_position[1]] == 'CP&A':
+                return Status.INPROCESS, self.ship_layout, self.position
             # Update the bot's position in the ship layout
             self.ship_layout[self.position[0]][self.position[1]] = 'O'  # Clear the old position
             self.position = next_position
