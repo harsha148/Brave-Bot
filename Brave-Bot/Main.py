@@ -34,4 +34,4 @@ if __name__ == '__main__':
     while k <= int(k_max):
         krange.append(k)
         k += int(k_step)
-    run_simulations_over_krange(ship_size, krange, 10, time_constraint,False)
+    run_simulations_over_krange(ship_size, krange, 1, time_constraint,True)
