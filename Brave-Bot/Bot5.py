@@ -32,10 +32,11 @@ class Bot5:
         p.start()
         p.join(self.step_time_constraint)
         if p.is_alive():
-            logging.debug('Step computation timeout error, so choosing the next cell it should move to the next position from the last computed path')
+            logging.debug('Step computation timeout error, so choosing the next cell as the next position from the last computed path')
             p.terminate()
             p.kill()
             self.path.clear()
+            logging.debug(f'last_path_position {self.last_path_position}')
             if self.last_path_position:
                 self.path.append(self.last_path_position)
         else:
@@ -44,7 +45,9 @@ class Bot5:
                 f'Step computation completed before time constraint. Time taken for step computation: {end_time - start_time}')
         if self.path:
             next_position = self.path.popleft()
-            self.last_path_position = self.path.popleft()
+            if self.path:
+                self.last_path_position = self.path.popleft()
+                print(self.last_path_position)
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
                 self.position = next_position
                 return Status.SUCCESS, self.ship_layout, self.position

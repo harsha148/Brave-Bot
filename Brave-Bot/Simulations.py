@@ -6,6 +6,7 @@ from Alien import alien_step
 from Bot1 import Bot1
 from Bot2 import Bot2
 from Bot3 import Bot3
+from Bot5 import Bot5
 from Ship import Ship
 from Spawner import Spawner
 from Status import Status
