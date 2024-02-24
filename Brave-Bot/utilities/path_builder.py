@@ -1,5 +1,5 @@
 from collections import deque
-
+import heapq
 from utilities.constants import restricted_cells
 
 
@@ -52,6 +52,44 @@ def get_safe_path(ship_layout, start, goal, result):
     return get_dynamic_path(ship_layout, start, goal, result, avoid_cells=get_aliens_positions(ship_layout))
 
 
+def dijkstra_shortest_path(ship_layout, start, goal, risk_scores):
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    n = len(ship_layout)
+
+    # Initialize distances, steps matrix, and priority queue
+    distances = [[float('inf') for _ in range(n)] for _ in range(n)]
+    steps = [[None for _ in range(n)] for _ in range(n)]
+    distances[start[0]][start[1]] = 0
+    pq = [(0, start)]
+
+    while pq:
+        current_distance, current_position = heapq.heappop(pq)
+        x, y = current_position
+
+        if current_position == goal:
+            return reconstruct_path(start, goal, steps)
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A']:
+                new_distance = current_distance + 1 + risk_scores[nx][ny]
+                if new_distance < distances[nx][ny]:
+                    distances[nx][ny] = new_distance
+                    steps[nx][ny] = (x, y)  # Store the previous cell to get the steps
+                    heapq.heappush(pq, (new_distance, (nx, ny)))
+
+    return None  # No path found
+
+
+def reconstruct_path(start, goal, steps):
+    path = deque()
+    current = goal
+    while current != start:
+        path.appendleft(current)
+        current = steps[current[0]][current[1]]
+    return path
+
+
 def get_aliens_and_adjacent_positions(ship_layout):
     aliens_positions = get_aliens_positions(ship_layout)
     adjacent_positions = set()
@@ -68,5 +106,5 @@ def get_aliens_and_adjacent_positions(ship_layout):
 
 def get_aliens_positions(ship_layout):
     aliens_positions = [(x, y) for x, row in enumerate(ship_layout)
-                        for y, cell in enumerate(row) if cell in restricted_cells]
+                        for y, cell in enumerate(row) if cell == 'A']
     return set(aliens_positions)
