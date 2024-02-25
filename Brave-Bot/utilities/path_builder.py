@@ -49,7 +49,7 @@ def get_safe_path(ship_layout, start, goal, result):
         return safe_path
 
     # If no safe path is found, fall back to Bot 2 behavior (avoid only aliens)
-    return get_dynamic_path(ship_layout, start, goal, result, avoid_cells=get_aliens_positions(ship_layout))
+    return get_dynamic_path(ship_layout, start, goal, result, avoid_cells=get_alien_positions(ship_layout))
 
 
 def dijkstra_shortest_path(ship_layout, start, goal, risk_scores):
@@ -91,7 +91,7 @@ def reconstruct_path(start, goal, steps):
 
 
 def get_aliens_and_adjacent_positions(ship_layout):
-    aliens_positions = get_aliens_positions(ship_layout)
+    aliens_positions = get_alien_positions(ship_layout)
     adjacent_positions = set()
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
@@ -104,7 +104,7 @@ def get_aliens_and_adjacent_positions(ship_layout):
     return aliens_positions.union(adjacent_positions)
 
 
-def get_aliens_positions(ship_layout):
+def get_alien_positions(ship_layout):
     aliens_positions = [(x, y) for x, row in enumerate(ship_layout)
                         for y, cell in enumerate(row) if cell == 'A']
     return set(aliens_positions)

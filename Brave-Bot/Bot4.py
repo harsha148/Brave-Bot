@@ -1,29 +1,28 @@
 from Status import Status
-from utilities.path_builder import dijkstra_shortest_path, get_aliens_positions
-from utilities.Utility import get_risk_matrix, get_risk_scores_matrix
+from utilities.path_builder import dijkstra_shortest_path, get_alien_positions
+from utilities.Utility import get_risk_scores_by_manhattan_distance_of_aliens, get_risk_scores_by_density_of_aliens
 import time
 
 
 class Bot4:
-    def __init__(self, ship_layout, start_position, goal_position):
+    def __init__(self, ship_layout, start_position, goal_position,is_density):
         self.ship_layout = ship_layout
         self.position = start_position
         self.goal = goal_position
-        self.risk_scores = get_risk_scores_matrix(ship_layout, get_aliens_positions(ship_layout))
+        self.risk_scores = get_risk_scores_by_density_of_aliens(ship_layout, get_alien_positions(ship_layout))
         self.path = self.calculate_path()
+        self.is_density = is_density
 
     def calculate_path(self):
         return dijkstra_shortest_path(self.ship_layout, self.position, self.goal, self.risk_scores)
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
         start_time = time.time()
-        self.risk_scores = get_risk_scores_matrix(self.ship_layout, get_aliens_positions(self.ship_layout))
-        end_time = time.time()
-        print(f'Computation time to get risk matrix:  {end_time - start_time}')
-        start_time = time.time()
+        if self.is_density:
+            self.risk_scores = get_risk_scores_by_density_of_aliens(self.ship_layout, get_alien_positions(self.ship_layout))
+        else:
+            self.risk_scores = get_risk_scores_by_manhattan_distance_of_aliens(self.ship_layout)
         self.path = self.calculate_path()
-        end_time = time.time()
-        print(f'Computation time to find path:  {end_time - start_time}')
         if self.path:
             next_position = self.path.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':

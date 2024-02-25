@@ -1,5 +1,6 @@
 import random
 import math
+from utilities.path_builder import get_alien_positions
 
 
 def random_next_step(position, ship_layout):
@@ -17,21 +18,33 @@ def random_next_step(position, ship_layout):
     return ()
 
 
+def get_num_of_open_cells(ship_layout):
+    ship_dim = len(ship_layout)
+    num_of_open_cells = 0
+    for i in range(ship_dim):
+        for j in range(ship_dim):
+            if ship_layout[i][j] == 'O':
+                num_of_open_cells += 1
+    return num_of_open_cells
+
+
 def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def get_risk_matrix(ship_layout, alien_positions):
+def get_risk_scores_by_manhattan_distance_of_aliens(ship_layout):
+    alien_positions = get_alien_positions(ship_layout)
     risk_scores = [[0 for _ in row] for row in ship_layout]
     for x in range(len(ship_layout)):
         for y in range(len(ship_layout)):
-            if ship_layout[x][y] != 'C':    # Skip blocked cells
+            if ship_layout[x][y] != 'C':  # Skip blocked cells
                 total_distance = sum(manhattan_distance((x, y), alien) for alien in alien_positions)
                 risk_scores[x][y] = 1 / (1 + total_distance)
     return risk_scores
 
 
-def get_risk_scores_matrix(ship_layout, alien_positions, radius=3, scaling_factor=1, midpoint=3):
+def get_risk_scores_by_density_of_aliens(ship_layout, radius=3, scaling_factor=1, midpoint=3):
+    alien_positions = get_alien_positions(ship_layout)
     risk_scores = [[0 for _ in row] for row in ship_layout]
 
     for x in range(len(ship_layout)):
@@ -49,4 +62,3 @@ def get_risk_scores_matrix(ship_layout, alien_positions, radius=3, scaling_facto
                 risk_scores[x][y] = 1 / (1 + math.exp(-scaling_factor * (alien_count - midpoint)))
 
     return risk_scores
-

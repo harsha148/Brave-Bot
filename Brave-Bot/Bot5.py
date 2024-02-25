@@ -18,12 +18,6 @@ class Bot5:
     def calculate_path(self):
         result = {}
         get_safe_path(self.ship_layout, self.position, self.goal, result)
-        '''
-        if there is no path to the captain, we try to check the shortest path without considering the 
-        aliens as the blocking aliens might move out of the way in the next moves.
-        '''
-        if not result['path']:
-            get_dynamic_path(self.ship_layout, self.position, self.goal, result)
         self.path = result['path']
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
