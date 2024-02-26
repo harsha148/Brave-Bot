@@ -7,13 +7,15 @@ from utilities.path_builder import get_safe_path, get_dynamic_path
 
 
 class Bot5:
-    def __init__(self, ship_layout, start_position, goal_position, step_time_constraint=float('inf')):
+    def __init__(self, ship_layout, start_position, goal_position, step_time_constraint=1000000):
         self.ship_layout = ship_layout
         self.position = start_position
         self.goal = goal_position
         self.path = deque()
         self.last_path_position = None
         self.step_time_constraint = step_time_constraint
+        if self.step_time_constraint == 0:
+            self.step_time_constraint = 1000000
 
     def calculate_path(self):
         result = {}
@@ -21,18 +23,15 @@ class Bot5:
         self.path = result['path']
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
-        p = multiprocessing.Process(self.calculate_path())
         start_time = time.time()
-        p.start()
-        p.join(self.step_time_constraint)
-        if p.is_alive():
-            logging.debug('Step computation timeout error, so choosing the next cell as the next position from the last computed path')
-            p.terminate()
-            p.kill()
+        self.calculate_path()
+        end_time = time.time()
+        if end_time - start_time > self.step_time_constraint:
             self.path.clear()
-            logging.debug(f'last_path_position {self.last_path_position}')
             if self.last_path_position:
                 self.path.append(self.last_path_position)
+            logging.warning(
+                'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
         else:
             end_time = time.time()
             logging.debug(

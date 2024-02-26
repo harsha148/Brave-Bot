@@ -25,18 +25,16 @@ class Bot2:
         self.path = result['path'] if result['path'] else deque()
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
-        p = multiprocessing.Process(self.calculate_path())
         start_time = time.time()
-        p.start()
-        p.join(self.step_time_constraint)
-        if p.is_alive():
-            p.terminate()
-            p.kill()
+        self.calculate_path()
+        end_time = time.time()
+        if end_time - start_time > self.step_time_constraint:
             self.path.clear()
             random_step = random_next_step(self.position, self.ship_layout)
             if random_step:
                 self.path.append(random_step)
-            logging.warning('Bot failed to compute next step in the time constraint, so choosing the next step randomly')
+            logging.warning(
+                'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
         if self.path:
             next_position = self.path.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':

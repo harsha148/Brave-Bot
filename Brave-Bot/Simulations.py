@@ -107,7 +107,6 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
             ship_layout, bot_initial_coordinates = spawner.spawn_bot()
             ship_layout, aliens = spawner.spawn_aliens(krange[i])
             ship_layout, captain = spawner.spawn_captain()
-            logging.info(f'bot initial coordinates: {bot_initial_coordinates}')
             for a in range(len(bot_types)):
                 logging.info('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
                 logging.info(
@@ -115,13 +114,14 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
                 logging.info('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
                 logging.info(f'The number of open cells in the ship_layout: {get_num_of_open_cells(ship_layout)}')
                 temp_ship_layout = copy.deepcopy(ship_layout)
+                temp_aliens = copy.deepcopy(aliens)
                 bot = get_bot(bot_types[a], temp_ship_layout, bot_initial_coordinates, captain, time_constraint)
                 if not bot:
                     logging.error(f'Invalid bot type: {bot_types[a]}')
                     sys.exit(0)
                 success_metric = success_metrics[bot_types[a].name]
                 alive_metric = alive_metrics[bot_types[a].name]
-                number_of_steps, status = run_simulation(temp_ship_layout, bot, aliens, is_show_tkinter)
+                number_of_steps, status = run_simulation(temp_ship_layout, bot, temp_aliens, is_show_tkinter)
                 if status == Status.SUCCESS:
                     success_metric[i] += 1
                 if status == Status.INPROCESS:
@@ -140,8 +140,10 @@ def plot_metrics(alive_metrics, success_metrics, krange):
     :param krange:
     :return:
     """
+    logging.info(f'Success Metrics for plot graph function:{success_metrics}')
     fig, (success_metrics_graph, alive_metrics_graph) = plt.subplots(1, 2, figsize=(12, 10))
     for bot in success_metrics:
+        logging.info(f'The bot:{bot}')
         success_metrics_graph.plot(krange, success_metrics[bot], label=bot)
     success_metrics_graph.set_title('Success Rate')
     success_metrics_graph.set_xlabel('k')
@@ -167,5 +169,5 @@ def get_bot(bot_type: BotType, ship_layout: list[list[int]], bot_init_coordinate
     if bot_type == BotType.BOT4:
         return Bot4(ship_layout, bot_init_coordinates, captain, True)
     if bot_type == BotType.BOT5:
-        return Bot5(ship_layout, bot_type, captain, time_constraint)
+        return Bot5(ship_layout, bot_init_coordinates, captain, time_constraint)
     return None

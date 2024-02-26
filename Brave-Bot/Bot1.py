@@ -14,6 +14,7 @@ class Bot1:
         self.position = bot_initial_coordinates
         self.goal = goal_position
         self.shortest_path_to_goal = deque()
+        self.calculate_path()
         self.step_time_constraint = step_time_constraint
         if self.step_time_constraint == 0:
             self.step_time_constraint = 100000
@@ -26,20 +27,17 @@ class Bot1:
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
         if (not self.shortest_path_to_goal) or len(self.shortest_path_to_goal) == 0:
-            p = multiprocessing.Process(self.calculate_path())
-            start_time =time.time()
-            p.start()
-            p.join(self.step_time_constraint)
-            if p.is_alive():
-                p.terminate()
-                p.kill()
+            start_time = time.time()
+            self.calculate_path()
+            end_time = time.time()
+            if end_time - start_time > self.step_time_constraint:
                 self.shortest_path_to_goal.clear()
                 random_step = random_next_step(self.position, self.ship_layout)
                 if random_step:
                     self.shortest_path_to_goal.append(random_step)
-                logging.warning('Bot failed to compute the next step within the time constraint. So choosing next step '
-                               'randomly')
-        if len(self.shortest_path_to_goal) > 0:
+                logging.warning(
+                    'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
+        if self.shortest_path_to_goal and len(self.shortest_path_to_goal) > 0:
             next_position = self.shortest_path_to_goal.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] in restricted_cells:
                 return Status.FAILURE, self.ship_layout, next_position
