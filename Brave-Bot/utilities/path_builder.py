@@ -1,6 +1,6 @@
+import logging
 from collections import deque
 import heapq
-from utilities.constants import restricted_cells
 
 
 def get_dynamic_path(ship_layout, start, goal, result, avoid_cells=None):
@@ -52,33 +52,62 @@ def get_safe_path(ship_layout, start, goal, result):
     return get_dynamic_path(ship_layout, start, goal, result, avoid_cells=get_alien_positions(ship_layout))
 
 
+def manhattan_distance(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
 def dijkstra_shortest_path(ship_layout, start, goal, risk_scores):
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
     n = len(ship_layout)
-
-    # Initialize distances, steps matrix, and priority queue
+    risk_factor = 2*n
+    distance_Factor = 1
+    current_dist_factor = 1  # Initialize distances, steps matrix, and priority queue
     distances = [[float('inf') for _ in range(n)] for _ in range(n)]
     steps = [[None for _ in range(n)] for _ in range(n)]
     distances[start[0]][start[1]] = 0
     pq = [(0, start)]
-
+    # for i in range(n):
+    #     for j in range(n):
+    #         pq.append((float('inf'),(i,j)))
     while pq:
         current_distance, current_position = heapq.heappop(pq)
         x, y = current_position
-
+        if current_distance > distances[x][y]:
+            continue
         if current_position == goal:
             return reconstruct_path(start, goal, steps)
 
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-            if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A']:
-                new_distance = current_distance + 1 + risk_scores[nx][ny]
+            if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A'] and (nx, ny) != steps[x][y]:
+                new_distance = current_dist_factor * (manhattan_distance((nx, ny), start)) + risk_factor * \
+                               risk_scores[nx][ny] + distance_Factor * manhattan_distance((nx, ny), goal)
+                # new_distance = risk_factor * risk_scores[nx][ny] + distance_Factor * manhattan_distance((nx,ny),goal)
+                # logging.info(f'd:{manhattan_distance((nx,ny),start)},risk:{risk_factor * risk_scores[nx][ny]},md:{distance_Factor * manhattan_distance((nx,ny),goal)}')
                 if new_distance < distances[nx][ny]:
                     distances[nx][ny] = new_distance
                     steps[nx][ny] = (x, y)  # Store the previous cell to get the steps
                     heapq.heappush(pq, (new_distance, (nx, ny)))
 
     return None  # No path found
+
+
+def get_safe_neighbouring_cell(current_cell, risk_scores, ship_layout):
+    x, y = current_cell
+    result = deque()
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    n = len(ship_layout)
+    safe_neighbor = None
+    min_risk = risk_scores[x][y]
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A']:
+            if risk_scores[nx][ny] < min_risk:
+                safe_neighbor = (nx, ny)
+                min_risk = risk_scores[nx][ny]
+    if safe_neighbor:
+        result.append(safe_neighbor)
+    return result
 
 
 def reconstruct_path(start, goal, steps):

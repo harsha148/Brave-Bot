@@ -1,11 +1,13 @@
+from collections import deque
+
 from Status import Status
-from utilities.path_builder import dijkstra_shortest_path, get_alien_positions
+from utilities.path_builder import dijkstra_shortest_path, get_alien_positions, get_safe_neighbouring_cell
 from utilities.Utility import get_risk_scores_by_manhattan_distance_of_aliens, get_risk_scores_by_density_of_aliens
 import time
 
 
 class Bot4:
-    def __init__(self, ship_layout, start_position, goal_position,is_density):
+    def __init__(self, ship_layout, start_position, goal_position, is_density):
         self.ship_layout = ship_layout
         self.position = start_position
         self.goal = goal_position
@@ -14,16 +16,21 @@ class Bot4:
         self.is_density = is_density
 
     def calculate_path(self):
-        return dijkstra_shortest_path(self.ship_layout, self.position, self.goal, self.risk_scores)
+        path = dijkstra_shortest_path(self.ship_layout, self.position, self.goal, self.risk_scores)
+        if path:
+            return path
+        return get_safe_neighbouring_cell(self.position, self.risk_scores, self.ship_layout)
 
     def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
         start_time = time.time()
         if self.is_density:
-            self.risk_scores = get_risk_scores_by_density_of_aliens(self.ship_layout, get_alien_positions(self.ship_layout))
+            self.risk_scores = get_risk_scores_by_density_of_aliens(self.ship_layout,
+                                                                    get_alien_positions(self.ship_layout))
         else:
-            self.risk_scores = get_risk_scores_by_manhattan_distance_of_aliens(self.ship_layout)
+            self.risk_scores = get_risk_scores_by_manhattan_distance_of_aliens(self.ship_layout,
+                                                                               get_alien_positions(self.ship_layout))
         self.path = self.calculate_path()
-        if self.path:
+        if self.path and len(self.path) > 0:
             next_position = self.path.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
                 self.position = next_position

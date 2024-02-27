@@ -5,6 +5,7 @@ import time
 from Simulations import *
 import argparse
 
+
 def add_arguments_to_parser(bot_parser):
     """
     :param bot_parser:
@@ -28,6 +29,19 @@ def add_arguments_to_parser(bot_parser):
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger('log')
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    kRange = []
+    k = 0
+    while k <= 200:
+        kRange.append(k)
+        k += 1
+    alive_metrics, success_metrics = run_simulations_over_krange(30, kRange,
+                                                                 500,
+                                                                 10000000,
+                                                                 [BotType.BOT4,BotType.BOT3,BotType.BOT2,BotType.BOT1], False)
+    plot_metrics(alive_metrics, success_metrics, kRange)
+    sys.exit(0)
     start_time = time.time()
     logger = logging.getLogger('log')
     logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -72,20 +86,19 @@ if __name__ == '__main__':
     alive_metrics = {}
     success_metrics = {}
     # sampling_index determines the number of times we will run the simulation for a single value of k
-    sampling_index = 50
+    sampling_index = 500
     if args.command == 'all_bots':
         alive_metrics, success_metrics = run_simulations_over_krange(args.ship_size, kRange,
                                                                      sampling_index,
                                                                      args.time_constraint,
-                                                                     [BotType.BOT1, BotType.BOT2, BotType.BOT3], False)
+                                                                     [BotType.BOT1, BotType.BOT2, BotType.BOT3,BotType.BOT4], False)
     else:
-        (alive_metrics[bot_type_by_command[args.command]],
-         success_metrics[bot_type_by_command[args.command]]) = run_simulations_over_krange(args.ship_size, kRange,
-                                                                                           sampling_index,
-                                                                                           args.time_constraint,
-                                                                                           bot_type_by_command[
-                                                                                               args.command],
-                                                                                           True)
+        alive_metrics, success_metrics = run_simulations_over_krange(args.ship_size, kRange,
+                                                                     sampling_index,
+                                                                     args.time_constraint,
+                                                                     [bot_type_by_command[
+                                                                         args.command]],
+                                                                     False)
 
     plot_metrics(alive_metrics, success_metrics, kRange)
     end_time = time.time()
