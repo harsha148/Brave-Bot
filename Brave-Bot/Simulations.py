@@ -124,8 +124,14 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
                 number_of_steps, status = run_simulation(temp_ship_layout, bot, temp_aliens, is_show_tkinter)
                 if status == Status.SUCCESS:
                     success_metric[i] += 1
-                if status == Status.INPROCESS:
-                    alive_metric[i] += 1
+                if status in [Status.FAILURE, Status.INPROCESS]:
+                    alive_metric[i] += number_of_steps
+    for bot in alive_metrics:
+        alive_metric = alive_metrics[bot]
+        for i in range(len(alive_metric)):
+            alive_metric[i] = (alive_metric[i] / sampling_index)
+
+
     logging.info(f'alive metrics:{alive_metrics}')
     logging.info(f'success metrics:{success_metrics}')
     return alive_metrics, success_metrics
@@ -146,14 +152,14 @@ def plot_metrics(alive_metrics, success_metrics, krange):
         logging.info(f'The bot:{bot}')
         success_metrics_graph.plot(krange, success_metrics[bot], label=bot)
     success_metrics_graph.set_title('Success Rate')
-    success_metrics_graph.set_xlabel('k')
+    success_metrics_graph.set_xlabel('k:Number of Aliens')
     success_metrics_graph.set_ylabel('Number of times bot succeeds within 1000 steps')
     success_metrics_graph.legend()
     for bot in alive_metrics:
         alive_metrics_graph.plot(krange, alive_metrics[bot], label=bot)
-    alive_metrics_graph.set_title('Alive')
-    alive_metrics_graph.set_xlabel('k')
-    alive_metrics_graph.set_ylabel('Number of times bot stays alive for 1000 steps')
+    alive_metrics_graph.set_title('Average number of steps bot stays alive when it fails')
+    alive_metrics_graph.set_xlabel('k:Number of Aliens')
+    alive_metrics_graph.set_ylabel('Avg no. of steps bot stays alive')
     alive_metrics_graph.legend()
     plt.show()
 
