@@ -32,7 +32,7 @@ def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def get_risk_scores_by_manhattan_distance_of_aliens(ship_layout,alien_positions):
+def get_risk_scores_by_manhattan_distance_of_aliens(ship_layout, alien_positions):
     risk_scores = [[0 for _ in row] for row in ship_layout]
     for x in range(len(ship_layout)):
         for y in range(len(ship_layout)):
@@ -42,7 +42,7 @@ def get_risk_scores_by_manhattan_distance_of_aliens(ship_layout,alien_positions)
     return risk_scores
 
 
-def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions, radius=3, scaling_factor=1, midpoint=0):
+def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions,risk_function_type, radius=3, scaling_factor=1):
     risk_scores = [[0 for _ in row] for row in ship_layout]
 
     for x in range(len(ship_layout)):
@@ -54,9 +54,17 @@ def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions, radius=3,
                         nx, ny = x + dx, y + dy
                         if 0 <= nx < len(ship_layout) and 0 <= ny < len(ship_layout):
                             if (nx, ny) in alien_positions:
-                                alien_count += (1/(manhattan_distance((x,y),(nx,ny)))) if (nx,ny) != (x,y) else 1
+                                alien_count += (1 / (manhattan_distance((x, y), (nx, ny)))) if (nx, ny) != (x, y) else 1
                 # Use the sigmoid function for risk scoring
                 # Experiment with different values for scaling-factor, midpoint for a better objective function
-                risk_scores[x][y] = (1 / (1 + math.exp(-scaling_factor * (alien_count - midpoint)))) if alien_count >0 else 0
+                risk_scores[x][y] = get_risk_by_alien_density(alien_count,scaling_factor,risk_function_type) if alien_count > 0 else 0
 
     return risk_scores
+
+
+def get_risk_by_alien_density(alien_count, scaling_factor,risk_function_type):
+    if risk_function_type == 'SIGMOID':
+        return 1 / (1 + math.exp(-scaling_factor * alien_count))
+    if risk_function_type == 'LOG':
+        return math.log(1 + scaling_factor * alien_count)
+    return math.tanh(1 + scaling_factor * alien_count)

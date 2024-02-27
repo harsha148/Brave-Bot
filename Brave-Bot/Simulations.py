@@ -167,7 +167,21 @@ def get_bot(bot_type: BotType, ship_layout: list[list[int]], bot_init_coordinate
     if bot_type == BotType.BOT3:
         return Bot3(ship_layout, bot_init_coordinates, captain, time_constraint)
     if bot_type == BotType.BOT4:
-        return Bot4(ship_layout, bot_init_coordinates, captain, True)
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 2 * len(ship_layout), 3)
+    if bot_type == BotType.BOT4RiskFactor1nRadius3:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 1 * len(ship_layout), 3)
+    if bot_type == BotType.BOT4RiskFactor2nRadius4:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 2 * len(ship_layout), 4)
+    if bot_type == BotType.BOT4RiskFactor2nRadius2:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 2 * len(ship_layout), 2)
+    if bot_type == BotType.BOT4RiskFactor4nRadius3:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 4 * len(ship_layout), 3)
+    if bot_type == BotType.BOT4RiskLogRiskFactor2nRadius3:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 4 * len(ship_layout), 3,
+                    risk_function_type='LOG')
+    if bot_type == BotType.BOT4RiskTanHRiskFactor2nRadius3:
+        return Bot4(ship_layout, bot_init_coordinates, captain, True, 4 * len(ship_layout), 3,
+                    risk_function_type='TANH')
     if bot_type == BotType.BOT5:
         return Bot5(ship_layout, bot_init_coordinates, captain, time_constraint)
     return None

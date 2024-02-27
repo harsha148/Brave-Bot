@@ -56,12 +56,10 @@ def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def dijkstra_shortest_path(ship_layout, start, goal, risk_scores):
+def dijkstra_shortest_path(ship_layout, start, goal, risk_scores,risk_factor):
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
     n = len(ship_layout)
-    risk_factor = 2*n
-    distance_Factor = 1
-    current_dist_factor = 1  # Initialize distances, steps matrix, and priority queue
+    # risk_factor = 2*n
     distances = [[float('inf') for _ in range(n)] for _ in range(n)]
     steps = [[None for _ in range(n)] for _ in range(n)]
     distances[start[0]][start[1]] = 0
@@ -80,10 +78,10 @@ def dijkstra_shortest_path(ship_layout, start, goal, risk_scores):
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A'] and (nx, ny) != steps[x][y]:
-                new_distance = current_dist_factor * (manhattan_distance((nx, ny), start)) + risk_factor * \
-                               risk_scores[nx][ny] + distance_Factor * manhattan_distance((nx, ny), goal)
+                new_distance = (manhattan_distance((nx, ny), start)) + risk_factor * \
+                               risk_scores[nx][ny] + manhattan_distance((nx, ny), goal)
                 # new_distance = risk_factor * risk_scores[nx][ny] + distance_Factor * manhattan_distance((nx,ny),goal)
-                # logging.info(f'd:{manhattan_distance((nx,ny),start)},risk:{risk_factor * risk_scores[nx][ny]},md:{distance_Factor * manhattan_distance((nx,ny),goal)}')
+                # logging.info(f'd:{manhattan_distance((nx,ny),start)},risk:{risk_factor * risk_scores[nx][ny]},md:{manhattan_distance((nx,ny),goal)}')
                 if new_distance < distances[nx][ny]:
                     distances[nx][ny] = new_distance
                     steps[nx][ny] = (x, y)  # Store the previous cell to get the steps

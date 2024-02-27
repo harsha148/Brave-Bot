@@ -29,19 +29,6 @@ def add_arguments_to_parser(bot_parser):
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger('log')
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
-    kRange = []
-    k = 0
-    while k <= 200:
-        kRange.append(k)
-        k += 1
-    alive_metrics, success_metrics = run_simulations_over_krange(30, kRange,
-                                                                 500,
-                                                                 10000000,
-                                                                 [BotType.BOT4,BotType.BOT3,BotType.BOT2,BotType.BOT1], False)
-    plot_metrics(alive_metrics, success_metrics, kRange)
-    sys.exit(0)
     start_time = time.time()
     logger = logging.getLogger('log')
     logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -71,9 +58,12 @@ if __name__ == '__main__':
     bot5Parse = subparsers.add_parser('bot5',
                                       help='Run simulation with bot5')
     add_arguments_to_parser(bot5Parse)
-    bot5Parse = subparsers.add_parser('all_bots',
-                                      help='Run simulation with all the bots')
-    add_arguments_to_parser(bot5Parse)
+    all_botsParse = subparsers.add_parser('all_bots',
+                                          help='Run simulation with all the bots')
+    add_arguments_to_parser(all_botsParse)
+    Bot4_tune = subparsers.add_parser('Bot4_tune',
+                                      help='Run simulation with all bot 4 variants')
+    add_arguments_to_parser(Bot4_tune)
     args = parser.parse_args()
     if args.k_max < args.k_min:
         logging.error('K_max value is lesser than K_min')
@@ -91,13 +81,28 @@ if __name__ == '__main__':
         alive_metrics, success_metrics = run_simulations_over_krange(args.ship_size, kRange,
                                                                      sampling_index,
                                                                      args.time_constraint,
-                                                                     [BotType.BOT1, BotType.BOT2, BotType.BOT3,BotType.BOT4], False)
+                                                                     [BotType.BOT1, BotType.BOT2, BotType.BOT3,
+                                                                      BotType.BOT4], False)
+    elif args.command == 'Bot4_tune':
+        alive_metrics, success_metrics = run_simulations_over_krange(args.ship_size, kRange,
+                                                                     500,
+                                                                     10000000,
+                                                                     [BotType.BOT3,
+                                                                      BotType.BOT4RiskFactor2nRadius2,
+                                                                      BotType.BOT4,
+                                                                      BotType.BOT4RiskFactor2nRadius4,
+                                                                      BotType.BOT4RiskFactor1nRadius3,
+                                                                      BotType.BOT4RiskFactor4nRadius3,
+                                                                      BotType.BOT4RiskLogRiskFactor2nRadius3,
+                                                                      BotType.BOT4RiskTanHRiskFactor2nRadius3,
+                                                                      ],
+                                                                     False)
     else:
         alive_metrics, success_metrics = run_simulations_over_krange(args.ship_size, kRange,
                                                                      sampling_index,
                                                                      args.time_constraint,
                                                                      [bot_type_by_command[
-                                                                         args.command]],
+                                                                          args.command]],
                                                                      False)
 
     plot_metrics(alive_metrics, success_metrics, kRange)
