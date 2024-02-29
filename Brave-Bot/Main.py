@@ -79,7 +79,7 @@ if __name__ == '__main__':
     alive_metrics = {}
     success_metrics = {}
     # sampling_index determines the number of times we will run the simulation for a single value of k
-    sampling_index = 50
+    sampling_index = 500
     if args.command == 'all_bots':
         alive_metrics, success_metrics, _, _ = run_simulations_over_krange(args.ship_size, kRange,
                                                                            sampling_index,
