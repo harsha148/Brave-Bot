@@ -20,35 +20,32 @@ class Bot5:
     def calculate_path(self):
         result = {}
         get_safe_path(self.ship_layout, self.position, self.goal, result)
-        self.path = result['path']
+        self.path = result['path'] if result['path'] else deque()
 
-    def step(self) -> tuple[Status, list[list[str]], tuple[int, int]]:
+    def step(self) -> tuple[Status, list[list[str]], tuple[int, int], float]:
+        computation_time = 0.0
         start_time = time.time()
         self.calculate_path()
-        end_time = time.time()
-        if end_time - start_time > self.step_time_constraint:
+        computation_time = time.time() - start_time
+        if computation_time > self.step_time_constraint:
+            # logging.info(f'Bot completed in {computation_time} seconds')
             self.path.clear()
             if self.last_path_position:
                 self.path.append(self.last_path_position)
             logging.warning(
                 'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
-        else:
-            end_time = time.time()
-            logging.debug(
-                f'Step computation completed before time constraint. Time taken for step computation: {end_time - start_time}')
         if self.path:
             next_position = self.path.popleft()
             if self.path:
                 self.last_path_position = self.path.popleft()
-                print(self.last_path_position)
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
                 self.position = next_position
-                return Status.SUCCESS, self.ship_layout, self.position
+                return Status.SUCCESS, self.ship_layout, self.position, computation_time
             elif self.ship_layout[next_position[0]][next_position[1]] == 'CP&A':
-                return Status.INPROCESS, self.ship_layout, self.position
-            # Update the bot's position in the ship layout
+                return Status.INPROCESS, self.ship_layout, self.position, computation_time
+            # Update the bots position in the ship layout
             self.ship_layout[self.position[0]][self.position[1]] = 'O'  # Clear the old position
             self.position = next_position
             self.ship_layout[self.position[0]][self.position[1]] = 'B'  # Mark the new position
 
-        return Status.INPROCESS, self.ship_layout, self.position
+        return Status.INPROCESS, self.ship_layout, self.position, computation_time
