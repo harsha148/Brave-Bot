@@ -35,8 +35,6 @@ class Bot2:
             random_step = random_next_step(self.position, self.ship_layout)
             if random_step:
                 self.path.append(random_step)
-            logging.warning(
-                'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
         if self.path:
             next_position = self.path.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':

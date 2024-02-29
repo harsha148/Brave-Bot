@@ -32,8 +32,6 @@ class Bot5:
             self.path.clear()
             if self.last_path_position:
                 self.path.append(self.last_path_position)
-            logging.warning(
-                'Bot failed to compute next step in the time constraint, so choosing the next step randomly')
         if self.path:
             next_position = self.path.popleft()
             if self.path:

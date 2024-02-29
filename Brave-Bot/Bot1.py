@@ -36,8 +36,6 @@ class Bot1:
                 random_step = random_next_step(self.position, self.ship_layout)
                 if random_step:
                     self.shortest_path_to_goal.append(random_step)
-                logging.warning(
-                    'Bot failed to compute next step within the time constraint, so choosing the next step randomly')
         if self.shortest_path_to_goal and len(self.shortest_path_to_goal) > 0:
             next_position = self.shortest_path_to_goal.popleft()
             if self.ship_layout[next_position[0]][next_position[1]] in restricted_cells:

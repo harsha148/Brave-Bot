@@ -1,6 +1,5 @@
 import random
 import math
-from utilities.path_builder import get_alien_positions
 
 
 def random_next_step(position, ship_layout):
@@ -48,23 +47,21 @@ def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions,risk_funct
     for x in range(len(ship_layout)):
         for y in range(len(ship_layout)):
             if ship_layout[x][y] != 'C':  # Skip blocked cells
-                alien_count = 0
+                sum_inverse_manhattan_distance = 0
                 for dx in range(-radius, radius + 1):
                     for dy in range(-radius, radius + 1):
                         nx, ny = x + dx, y + dy
                         if 0 <= nx < len(ship_layout) and 0 <= ny < len(ship_layout):
                             if (nx, ny) in alien_positions:
-                                alien_count += (1 / (manhattan_distance((x, y), (nx, ny)))) if (nx, ny) != (x, y) else 1
-                # Use the sigmoid function for risk scoring
-                # Experiment with different values for scaling-factor, midpoint for a better objective function
-                risk_scores[x][y] = get_risk_by_alien_density(alien_count,scaling_factor,risk_function_type) if alien_count > 0 else 0
+                                sum_inverse_manhattan_distance += (1 / (manhattan_distance((x, y), (nx, ny)))) if (nx, ny) != (x, y) else 1
+                risk_scores[x][y] = get_risk_by_alien_density(sum_inverse_manhattan_distance,risk_function_type) if sum_inverse_manhattan_distance > 0 else 0
 
     return risk_scores
 
 
-def get_risk_by_alien_density(alien_count, scaling_factor,risk_function_type):
+def get_risk_by_alien_density(sum_inverse_manhattan_distance,risk_function_type):
     if risk_function_type == 'SIGMOID':
-        return 1 / (1 + math.exp(-scaling_factor * alien_count))
+        return 1 / (1 + math.exp(-1 * sum_inverse_manhattan_distance))
     if risk_function_type == 'LOG':
-        return math.log(1 + scaling_factor * alien_count)
-    return math.tanh(1 + scaling_factor * alien_count)
+        return math.log(1 + sum_inverse_manhattan_distance)
+    return math.tanh(1 + sum_inverse_manhattan_distance)
