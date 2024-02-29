@@ -96,17 +96,18 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
     """
     # sampling_index determines the number of times we will run the simulation for a single value of k
     # metric that stores the number of times a bot succeeds for a particular value of k
-    # logging = coloredlogging()
     success_metrics = {}
     # metric that stores the number of times the bot fails to reach the captain within 1000 steps but keeps itself alive
     alive_metrics = {}
     avg_number_of_times_time_constraint_breached = {}
     avg_step_computation_time_for_bots = {}
+    number_of_failures_for_bots = {}
     for bot_type in bot_types:
         alive_metrics[bot_type.name] = [0] * len(krange)
         success_metrics[bot_type.name] = [0] * len(krange)
         avg_number_of_times_time_constraint_breached[bot_type.name] = [0] * len(krange)
         avg_step_computation_time_for_bots[bot_type.name] = [0] * len(krange)
+        number_of_failures_for_bots[bot_type.name] = [0] * len(krange)
     for i in range(len(krange)):
         logging.info('##################################################')
         logging.info(f'Running Simulation with K={krange[i]}')
@@ -135,6 +136,7 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
                 avg_number_of_times_time_constraint_breached_by_bot = (
                     avg_number_of_times_time_constraint_breached)[bot_types[a].name]
                 avg_step_computation_time_by_bot = avg_step_computation_time_for_bots[bot_types[a].name]
+                number_of_failures_by_bot = number_of_failures_for_bots[bot_types[a].name]
                 (number_of_steps, status,
                  avg_step_computation_time, number_of_times_time_constraint_breached) = run_simulation(temp_ship_layout,
                                                                                                        bot,
@@ -145,20 +147,23 @@ def run_simulations_over_krange(ship_dim: int, krange: list[int], sampling_index
                     success_metric[i] += 1
                 if status in [Status.FAILURE, Status.INPROCESS]:
                     alive_metric[i] += number_of_steps
+                    number_of_failures_by_bot[i] += 1
                 avg_number_of_times_time_constraint_breached_by_bot[i] += number_of_times_time_constraint_breached
                 avg_step_computation_time_by_bot[i] += avg_step_computation_time
     for bot in alive_metrics:
         alive_metric = alive_metrics[bot]
         avg_number_of_times_time_constraint_breached_by_bot = avg_number_of_times_time_constraint_breached[bot]
         avg_step_computation_time_by_bot = avg_step_computation_time_for_bots[bot]
+        number_of_failures_by_bot = number_of_failures_for_bots[bot]
         for i in range(len(alive_metric)):
-            alive_metric[i] = (alive_metric[i] / sampling_index)
+            alive_metric[i] = (alive_metric[i] / number_of_failures_by_bot[i]) if alive_metric[i] != 0 else 0
             # avg_number_of_times_time_constraint_breached_by_bot[i] = (
             #         (avg_number_of_times_time_constraint_breached_by_bot[i]) / sampling_index)
             avg_step_computation_time_by_bot[i] = (avg_step_computation_time_by_bot[i]) / sampling_index
 
     logging.info(f'alive metrics:{alive_metrics}')
     logging.info(f'success metrics:{success_metrics}')
+    logging.info(f'Number of times bot fails:{number_of_failures_for_bots}')
     return (alive_metrics, success_metrics, avg_number_of_times_time_constraint_breached,
             avg_step_computation_time_for_bots)
 
