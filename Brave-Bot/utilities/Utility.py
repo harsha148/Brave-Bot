@@ -41,7 +41,7 @@ def get_risk_scores_by_manhattan_distance_of_aliens(ship_layout, alien_positions
     return risk_scores
 
 
-def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions,risk_function_type, radius=3, scaling_factor=1):
+def get_risk_scores_by_density_of_aliens(ship_layout, alien_positions,risk_function_type, radius=3):
     risk_scores = [[0 for _ in row] for row in ship_layout]
 
     for x in range(len(ship_layout)):
