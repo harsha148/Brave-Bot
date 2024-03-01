@@ -32,8 +32,14 @@ Compare BOT 1, BOT 2, BOT 3, BOT 4: python3 main.py all_bots --ship_size=30 --k_
 Compare BOT 1, BOT 2, BOT 3, BOT 5 with a time constraint: python3 main.py time_constraint --ship_size=30 --k_min=0 --k_max=200 --k_step=1 --time_constraint=0.0005
 
 Description of the arguments:
+
 ship_size: The dimension of the ship layout
+
 k_min: The minimum value of K(number of aliens) in the range of K
+
 k_max: The maximum value of K(number of aliens) in the range of K
+
 k_step: The step size of values of K
+
 time_constraint: The time constraint for the bot step
+
