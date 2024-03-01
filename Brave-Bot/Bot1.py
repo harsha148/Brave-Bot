@@ -51,22 +51,32 @@ class Bot1:
             # calculating the time taken for computing the next step
             computation_time = time.time() - start_time
             # checking if the time constraint is breached. If the constraint is breached, we are forcing the bot to
-            # behave randomly
+            # behave randomly( so that it does not make a definite decision when the time constraint is breached)
             if computation_time > self.step_time_constraint:
                 self.shortest_path_to_goal.clear()
+                # calling function to identify the random step from a list of valid neighbors.
                 random_step = random_next_step(self.position, self.ship_layout)
                 if random_step:
                     self.shortest_path_to_goal.append(random_step)
+        # if we have identified a path to goal, we are popping the next position of the bot from the start of the queue
+        # if we are not able to find any path to the goal, then the bot stays in the current position.
         if self.shortest_path_to_goal and len(self.shortest_path_to_goal) > 0:
+            # popping the next position from the start of the path queue
             next_position = self.shortest_path_to_goal.popleft()
+            # checking if the next position of the bot is within a restricted i.e the cell contains an alien
             if self.ship_layout[next_position[0]][next_position[1]] in restricted_cells:
+                # if yes, the bot fails, and we return the status of the simulation as Failure
                 return Status.FAILURE, self.ship_layout, next_position, computation_time
-
+            # checking if the next cell of the bot contains the captain
             if self.ship_layout[next_position[0]][next_position[1]] == 'CP':
+                # if yes, then the bot succeeded in reaching the captain, without encountering the aliens
                 return Status.SUCCESS, self.ship_layout, next_position, computation_time
             # Update the bot's position in the ship layout
+            # Updating the current position of the bot to an unoccupied open cell
             self.ship_layout[self.position[0]][self.position[1]] = 'O'  # Clear the old position
+            # Updating the position of the bot
             self.position = next_position
+            # Updating the ship layout, so that the next position of the bot reflects the bot
             self.ship_layout[self.position[0]][self.position[1]] = 'B'  # Mark the new position
 
         return Status.INPROCESS, self.ship_layout, self.position, computation_time

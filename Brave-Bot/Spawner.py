@@ -35,6 +35,7 @@ class Spawner(object):
         # visited_open_squares should contain the entire list of open squares
         return list(visited_open_squares)
 
+    # function for spawning bot
     def spawn_bot(self) -> tuple[list[list[int]], tuple[int, int]]:
         random_open_square_for_bot = random.choice(self.open_squares)
         x, y = random_open_square_for_bot
@@ -42,12 +43,14 @@ class Spawner(object):
         self.open_squares.remove(random_open_square_for_bot)
         return self.ship_layout, random_open_square_for_bot
 
+    # function for spawning aliens
     def spawn_aliens(self, number_of_aliens) -> tuple[list[list[int]], list[tuple[int, int]]]:
         random_open_squares_for_aliens = random.sample(self.open_squares, number_of_aliens)
         for alien in random_open_squares_for_aliens:
             self.ship_layout[alien[0]][alien[1]] = 'A'
         return self.ship_layout, random_open_squares_for_aliens
 
+    # function for spawning captain
     def spawn_captain(self) -> tuple[list[list[int]], tuple[int, int]]:
         random_open_square_for_captain = random.choice(self.open_squares)
         x, y = random_open_square_for_captain

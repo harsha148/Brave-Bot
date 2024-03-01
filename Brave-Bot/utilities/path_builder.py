@@ -4,6 +4,15 @@ import heapq
 
 
 def get_dynamic_path(ship_layout, start, goal, result, avoid_cells=None):
+    """
+    :param ship_layout: layout of the ship as a 2D matrix with each element representing whether the cell at that
+                                 coordinates is open/closed/occupied by someone(Eg: Alien/Bot/Captain)
+    :param start: tuple containing the coordinates of the cell in which the bot is spawned
+    :param goal: tuple containing the coordinates of the cell in which the captain is spawned in.
+    :param result: dictionary to store the output
+    :param avoid_cells: set of cells to avoid in the path to the captain
+    :return: dictionary containing the path
+    """
     result['path'] = None
     if start == goal:
         result['path'] = [start]
@@ -17,6 +26,7 @@ def get_dynamic_path(ship_layout, start, goal, result, avoid_cells=None):
     visited = {start}  # Keep track of visited positions to avoid loops
     queue = deque([(start, deque())])  # Queue for BFS: (current_position, path to this position)
 
+    # performing BFS
     while queue:
         current_position, path = queue.popleft()
 
@@ -56,17 +66,17 @@ def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def dijkstra_shortest_path(ship_layout, start, goal, risk_scores,risk_factor):
+def a_star_least_risky_path(ship_layout, start, goal, risk_scores, risk_factor):
+    # directions for finding the neighboring cells of the bot
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    # dimension of the ship
     n = len(ship_layout)
-    # risk_factor = 2*n
+    # matrix to store the heuristic distance
     distances = [[float('inf') for _ in range(n)] for _ in range(n)]
     steps = [[None for _ in range(n)] for _ in range(n)]
     distances[start[0]][start[1]] = 0
     pq = [(0, start)]
-    # for i in range(n):
-    #     for j in range(n):
-    #         pq.append((float('inf'),(i,j)))
+    # A star algorithm for finding the least risky path based on the heuristic to the captain
     while pq:
         current_distance, current_position = heapq.heappop(pq)
         x, y = current_position
@@ -74,14 +84,12 @@ def dijkstra_shortest_path(ship_layout, start, goal, risk_scores,risk_factor):
             continue
         if current_position == goal:
             return reconstruct_path(start, goal, steps)
-
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if 0 <= nx < n and 0 <= ny < n and ship_layout[nx][ny] not in ['C', 'A'] and (nx, ny) != steps[x][y]:
+                # heuristic for the neighboring cell (nx,ny)
                 new_distance = (manhattan_distance((nx, ny), start)) + risk_factor * \
                                risk_scores[nx][ny] + manhattan_distance((nx, ny), goal)
-                # new_distance = risk_factor * risk_scores[nx][ny] + distance_Factor * manhattan_distance((nx,ny),goal)
-                # logging.info(f'd:{manhattan_distance((nx,ny),start)},risk:{risk_factor * risk_scores[nx][ny]},md:{manhattan_distance((nx,ny),goal)}')
                 if new_distance < distances[nx][ny]:
                     distances[nx][ny] = new_distance
                     steps[nx][ny] = (x, y)  # Store the previous cell to get the steps
