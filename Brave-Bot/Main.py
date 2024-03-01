@@ -65,8 +65,11 @@ if __name__ == '__main__':
                                       help='Run simulation with all bot 4 variants')
     add_arguments_to_parser(Bot4_tune)
     time_constraint_parser = subparsers.add_parser('time_constraint',
-                                      help='Run simulation with all bot 4 variants')
+                                                   help='Run simulation with all bot 4 variants')
     add_arguments_to_parser(time_constraint_parser)
+    bot123_parser = subparsers.add_parser('bot123',
+                                                   help='Run simulation with all bot 4 variants')
+    add_arguments_to_parser(bot123_parser)
     args = parser.parse_args()
     if args.k_max < args.k_min:
         logging.error('K_max value is lesser than K_min')
@@ -80,7 +83,13 @@ if __name__ == '__main__':
     success_metrics = {}
     # sampling_index determines the number of times we will run the simulation for a single value of k
     sampling_index = 500
-    if args.command == 'all_bots':
+    if args.command == 'bot123':
+        alive_metrics, success_metrics, _, _ = run_simulations_over_krange(args.ship_size, kRange,
+                                                                           sampling_index,
+                                                                           args.time_constraint,
+                                                                           [BotType.BOT1, BotType.BOT2, BotType.BOT3,
+                                                                            ], False)
+    elif args.command == 'all_bots':
         alive_metrics, success_metrics, _, _ = run_simulations_over_krange(args.ship_size, kRange,
                                                                            sampling_index,
                                                                            args.time_constraint,
@@ -101,7 +110,7 @@ if __name__ == '__main__':
                                                                             ],
                                                                            False)
     elif args.command == 'time_constraint':
-        alive_metrics, success_metrics,avg_number_of_times_time_constraint_breached, avg_step_computation_time_for_bots = run_simulations_over_krange(
+        alive_metrics, success_metrics, avg_number_of_times_time_constraint_breached, avg_step_computation_time_for_bots = run_simulations_over_krange(
             args.ship_size, kRange,
             sampling_index,
             args.time_constraint,
@@ -110,20 +119,20 @@ if __name__ == '__main__':
         logging.info(f'Average number of times the time constraint is breached:'
                      f' {avg_number_of_times_time_constraint_breached}')
         logging.info(f'Average time taken for step computation: {avg_step_computation_time_for_bots}')
-        plot_metric(avg_number_of_times_time_constraint_breached,kRange,
-                    'Avg. number of times time constraint breached','k:Number of aliens',
+        plot_metric(avg_number_of_times_time_constraint_breached, kRange,
+                    'Avg. number of times time constraint breached', 'k:Number of aliens',
                     'Avg. number of times time constraint breached by bots vs Number of aliens')
         plot_metric(avg_step_computation_time_for_bots, kRange,
                     'Avg. time taken for step computation', 'k:Number of aliens',
                     'Avg. time taken for step computation by bots vs Number of aliens')
     else:
         alive_metrics, success_metrics, _, _ = run_simulations_over_krange(args.ship_size, kRange,
-                                                                     sampling_index,
-                                                                     args.time_constraint,
-                                                                     [bot_type_by_command[
-                                                                          args.command]],
-                                                                     False)
-    plot_metric(success_metrics,kRange,'Number of times bot succeeds within 1000 steps','k:Number of aliens',
+                                                                           sampling_index,
+                                                                           args.time_constraint,
+                                                                           [bot_type_by_command[
+                                                                                args.command]],
+                                                                           False)
+    plot_metric(success_metrics, kRange, 'Number of times bot succeeds within 1000 steps', 'k:Number of aliens',
                 'Success Rate')
     plot_metric(alive_metrics, kRange, 'Average number of steps bot stays alive when it fails', 'k:Number of aliens',
                 'Avg no. of steps bot stays alive')
