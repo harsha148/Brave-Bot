@@ -13,15 +13,15 @@ Unzip the project, open terminal in the /Brave-Bot/Brave-Bot folder
 
 The command for running the bots individually:
 
-BOT 1 :  #python3 main.py bot1 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
+BOT 1 :  python3 main.py bot1 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
 
-BOT 2 :  #python3 main.py bot2 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
+BOT 2 :  python3 main.py bot2 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
 
-BOT 3 :  #python3 main.py bot3 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
+BOT 3 :  python3 main.py bot3 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
 
-BOT 4 :  #python3 main.py bot4 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
+BOT 4 :  python3 main.py bot4 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
 
-BOT 5 :  #python3 main.py bot5 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
+BOT 5 :  python3 main.py bot5 --ship_size=30 --k_min=0 --k_max=200 --k_step=1
 
 Comparing the bots:
 
