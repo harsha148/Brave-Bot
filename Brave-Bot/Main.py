@@ -59,13 +59,13 @@ if __name__ == '__main__':
                                       help='Run simulation with bot5')
     add_arguments_to_parser(bot5Parse)
     all_botsParse = subparsers.add_parser('all_bots',
-                                          help='Run simulation with all the bots')
+                                          help='Run simulation with all the bots i.e Bot1, Bot2, Bot3, Bot4')
     add_arguments_to_parser(all_botsParse)
     Bot4_tune = subparsers.add_parser('Bot4_tune',
                                       help='Run simulation with all bot 4 variants')
     add_arguments_to_parser(Bot4_tune)
     time_constraint_parser = subparsers.add_parser('time_constraint',
-                                                   help='Run simulation with all bot 4 variants')
+                                                   help='Run simulation with Bot1, Bot2, Bot3, and Bot5 with time constrain t')
     add_arguments_to_parser(time_constraint_parser)
     bot123_parser = subparsers.add_parser('bot123',
                                                    help='Run simulation with all bot 4 variants')
